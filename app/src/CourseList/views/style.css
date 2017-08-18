@@ -1,0 +1,11 @@
+.course-wrap{
+    display: flex;
+    justify-content: center;
+    padding: 30px;
+    margin-top: 50px;
+}
+
+.uploadimg{
+    width: 80px;
+    height: 80px;
+}
