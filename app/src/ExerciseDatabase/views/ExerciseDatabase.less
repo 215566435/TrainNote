@@ -1,0 +1,34 @@
+.closed (@width: 0px,@opacity:0) {   
+    -webkit-transition:all .4s ease; 
+    -moz-transition:all .4s ease; 
+    -ms-transition:all .4s ease; 
+    -o-transition:all .4s ease; 
+    transition:all .4s ease; 
+    width: @width;
+    opacity: @opacity;
+    display: flex;
+    flex-direction: column;
+    margin-right: 24px;
+    margin-left: 24px;
+}
+
+.ExerciseDatabase{
+    position: relative;
+    display: flex;
+    
+    .ExerciseBoard{
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .ExerciseAdd{
+        .closed(250px,1);
+        transform: scale(1);
+        transform-origin:0% 0%;
+    }
+    .ExerciseAdd.closed{
+        .closed;
+        transform: scale(0);
+        transform-origin:0% 0%;
+    }
+
+}

@@ -31,6 +31,23 @@ module.exports = {
                 test: /\.css$/,
                 loader: 'style-loader!css-loader'//在webpack-dev中不能使用--hot
             },
+            {
+                test: /\.(png|jpg|svg)$/,
+                loader: 'url-loader'
+            },
+            {
+                test: /\.less$/,
+                use: ["style-loader", 'css-loader', {
+                    loader: 'postcss-loader',
+                    options: {           // 如果没有options这个选项将会报错 No PostCSS Config found
+                        plugins: (loader) => [
+                            require('postcss-import')({ root: loader.resourcePath }),
+                            require('autoprefixer')(), //CSS浏览器兼容
+                            require('cssnano')()  //压缩css
+                        ]
+                    }
+                }, "less-loader"]
+            }
 
         ]
     },

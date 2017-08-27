@@ -28,6 +28,10 @@ module.exports = {
                 exclude: /node_modules/
             },
             {
+                test: /\.(png|jpg|svg)$/,
+                loader: 'url-loader'
+            },
+            {
                 test: /\.less$/,
                 use: ["style-loader", 'css-loader', {
                     loader: 'postcss-loader',

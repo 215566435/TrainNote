@@ -4,4 +4,13 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
+actions	../script/com.py	/^strin = "import * as actions from '.\/action'\\nimport reducer from '.\/reducer'\\nimport view from '.\/views\/content'\\nexport {actions, reducer, view};"$/;"	kind:namespace	line:4
 com.py	../script/com.py	1;"	kind:file	line:1
+from	../script/com.py	/^strin = "import * as actions from '.\/action'\\nimport reducer from '.\/reducer'\\nimport view from '.\/views\/content'\\nexport {actions, reducer, view};"$/;"	kind:namespace	line:4
+nexport	../script/com.py	/^strin = "import * as actions from '.\/action'\\nimport reducer from '.\/reducer'\\nimport view from '.\/views\/content'\\nexport {actions, reducer, view};"$/;"	kind:namespace	line:4
+nimport	../script/com.py	/^strin = "import * as actions from '.\/action'\\nimport reducer from '.\/reducer'\\nimport view from '.\/views\/content'\\nexport {actions, reducer, view};"$/;"	kind:namespace	line:4
+os	../script/com.py	/^import os$/;"	kind:namespace	line:1
+reducer	../script/com.py	/^strin = "import * as actions from '.\/action'\\nimport reducer from '.\/reducer'\\nimport view from '.\/views\/content'\\nexport {actions, reducer, view};"$/;"	kind:namespace	line:4
+strin	../script/com.py	/^strin = "import * as actions from '.\/action'\\nimport reducer from '.\/reducer'\\nimport view from '.\/views\/content'\\nexport {actions, reducer, view};"$/;"	kind:variable	line:4
+sys	../script/com.py	/^import sys$/;"	kind:namespace	line:2
+view	../script/com.py	/^strin = "import * as actions from '.\/action'\\nimport reducer from '.\/reducer'\\nimport view from '.\/views\/content'\\nexport {actions, reducer, view};"$/;"	kind:namespace	line:4

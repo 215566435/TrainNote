@@ -1,9 +1,16 @@
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { reducer as courseListReducer } from './CourseList';
+import { reducer as BodyCardsReducer } from './BodyCards';
+import { reducer as ExerciseDatabaseReducer } from './ExerciseDatabase'
 import thunkMiddleware from 'redux-thunk';
 
+
+
+
 const reducer = combineReducers({
-  courseList: courseListReducer
+  courseList: courseListReducer,
+  bodyCard: BodyCardsReducer,
+  ExerciseDatabase:ExerciseDatabaseReducer
 });
 
 const win = window;
