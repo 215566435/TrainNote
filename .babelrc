@@ -12,7 +12,8 @@
   ],
   "plugins": [
     "react-hot-loader/babel",
-  	["import", { libraryName: "antd", style: "css" }]
+    // ["import", { "libraryName": "antd", "style": "css" }],
+    ["import", { "libraryName": "antd", "style": "css" }]
       // 开启react代码的模块热替换（HMR）
   ]
 }

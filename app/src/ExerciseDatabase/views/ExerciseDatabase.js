@@ -6,7 +6,7 @@ import { Card, Button } from 'antd'
 import { Spin, Icon, message, Input } from 'antd';
 
 import { Exercise } from '../../PlanDashboard/views/planContent'
-import { getDatabaseAsync } from '../action'
+import { dispatcherAsync } from '../action'
 
 import './ExerciseDatabase.less'
 
@@ -60,39 +60,15 @@ class ExerciseDatabase extends Component {
         this.state = {
             added: false,
             color: '',
-            loading: false,
-            pageLoading: true
+            loading: false
         }
         this.addHandle = this.addHandle.bind(this)
         this.Upload = this.Upload.bind(this)
     }
-
     addHandle() {
         this.setState({
             added: !this.state.added,
             color: this.state.added ? '' : '#08c'
-        })
-    }
-    deleteHandle(index) {
-        let database = this.state.database
-        database[index].loading = true
-        this.setState({ database: database })
-        request.Delete({
-            url: Url,
-            id: this.state.database[index].id
-        }).then((res) => {
-            res.json().then((resJson) => {
-                this.setState({
-                    database: this.state.database.filter((item, idx) => {
-                        if (idx != index) return item
-                    })
-                })
-                message.success('删除成功')
-            }).catch((error) => {
-                message.error('删除无效：' + error)
-            })
-        }).catch((error) => {
-            message.error('删除请求失败：' + error)
         })
     }
     Upload(uploadData) {
@@ -103,28 +79,15 @@ class ExerciseDatabase extends Component {
             }
         }
         this.setState({ loading: true })
-        request.Post({
-            url: Url,
-            jsonData: { name: uploadData.name, url: uploadData.url }
-        }).then((res) => {
-            res.json().then((resJson) => {
-                message.success('添加成功')
-                this.setState({
-                    database: [...this.state.database, resJson],
-                    loading: false
-                })
-            }).catch((error) => {
-                this.setState({ loading: false })
-                message.error('添加失败:' + error)
-            })
-        }).catch((error) => {
-            message.error('网络请求错误：' + error)
-            this.setState({ loading: false })
-        })
+        let chunk = { ...uploadData, node: this }
+        this.props.Upload(chunk)
     }
 
     componentDidMount() {
-        this.props.getDatabase(this)
+        if (this.props.database.length != 0) {
+            return
+        }
+        this.props.getDatabase()
     }
     render() {
         return (
@@ -132,7 +95,7 @@ class ExerciseDatabase extends Component {
                 className='ExerciseDatabase'
                 style={{ marginTop: '8px', padding: 24, background: '#fff', minHeight: 280 }}
             >
-                {this.state.pageLoading ?
+                {this.props.pageLoading ?
                     <div style={{ position: 'absolute', left: '50%', top: '50%' }}>
                         <Spin size="large" />
                     </div> :
@@ -153,7 +116,7 @@ class ExerciseDatabase extends Component {
                                 title={item.name}
                                 content=''
                                 url={item.url}
-                                onDelete={() => { this.deleteHandle(index) }}
+                                onDelete={() => { this.props.Delete(index) }}
                                 loading={item.loading}
                                 close={true}
                             />
@@ -166,15 +129,21 @@ class ExerciseDatabase extends Component {
 }
 
 const mapState = (state) => {
+    const { database, pageState } = state.ExerciseDatabase
     return {
-        database: state.ExerciseDatabase.database
+        database: database,
+        pageLoading: pageState.loading
     }
 }
 
 const mapDispach = (dispatch) => {
     return {
-        getDatabase: (node) => { dispatch(getDatabaseAsync(node)) }
+        getDatabase: () => { dispatch(dispatcherAsync('fetchDatabase')) },
+        Upload: (uploadData) => { dispatch(dispatcherAsync('fetchUpload', uploadData)) },
+        Delete: (index) => { dispatch(dispatcherAsync('fetchDelete', index)) }
     }
 }
 
 export default connect(mapState, mapDispach)(ExerciseDatabase)
+
+

@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Pagination, Steps, Button, Input, Icon } from 'antd'
 
 import { Exercise } from '../../PlanDashboard/views/planContent'
+import {getDatabaseAsync} from '../action'
 
 const Step = Steps.Step
 const InputGroup = Input.Group
@@ -29,7 +30,7 @@ const ChooseExercise = ({ database }) => {
     )
 }
 
-class EditExercise extends Component {
+class EditExercise extends React.Component {
     state = {
         hover: false
     }
@@ -55,7 +56,7 @@ class EditExercise extends Component {
     }
 }
 
-class ModalContent extends Component {
+class ModalContent extends React.Component {
     constructor(prop) {
         super(...prop)
         this.state = {
@@ -76,6 +77,10 @@ class ModalContent extends Component {
         })
     }
 
+    componentDidMount() {
+        if(this.props.database.length != 0)return
+        this.props.getDatabaseAsync()
+    }
     render() {
         const { current } = this.state
         return (
@@ -108,5 +113,10 @@ const mapState = (state) => {
         database: state.ExerciseDatabase.database
     }
 }
+const mapDispach = (dispach) => {
+    return {
+        getDatabaseAsync: () => { dispach(getDatabaseAsync()) }
+    }
+}
 
-export default connect(mapState)(ModalContent)
+export default connect(mapState,mapDispach)(ModalContent)
