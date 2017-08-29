@@ -1,5 +1,8 @@
-import request from '../NetWorkUtils/request'
 import { message } from 'antd';
+import { call, put, take, select } from 'redux-saga/effects';
+
+import request from '../NetWorkUtils/request'
+
 
 const Url = 'http://127.0.0.1:3000/api/exercise'
 
@@ -17,73 +20,84 @@ const deleteData = (index) => ({
 })
 
 
+const fetchDatabase = function* () {
+    try {
+        let res = yield call(fetch, Url)
+        let resJon = yield res.json()
 
-const fetchDatabase = (dispatch, getState) => {
-    fetch(Url, {
-        method: 'GET'
-    }).then((res) => {
-        res.json().then((resJson) => {
-            let fixedRes = resJson.map((item) => {
-                let i = item
-                i['loading'] = false
-                return i
-            })
-            message.success('读取数据成功')
-            dispatch(getDatabase(fixedRes))
-        }).catch((error) => {
-            message.error('读取数据失败:' + error)
-            dispatch(getDatabase([]))
+        let state = yield select(state => state.ExerciseDatabase)
+        message.success('读取数据成功')
+        yield put({
+            type: 'SET_STATE',
+            state: { ...state, database: resJon, pageState: { loading: false } }
         })
-    })
-}
-const fetchUpload = (dispatch, getState, uploadData) => {
-    let node = uploadData.node
-    request.Post({
-        url: Url,
-        jsonData: { name: uploadData.name, url: uploadData.url }
-    }).then((res) => {
-        res.json().then((resJson) => {
-            message.success('添加成功')
-            dispatch(uploadDataBack(resJson))
-            node.setState({ loading: false })
-        }).catch((error) => {
-            message.error('添加失败:' + error)
-            node.setState({ loading: false })
-        })
-    }).catch((error) => {
-        message.error('网络请求错误：' + error)
-        node.setState({ loading: false })
-    })
-}
-
-const fetchDelete = (dispatch, getState, index) => {
-    const { database } = getState().ExerciseDatabase
-
-    request.Delete({
-        url: Url,
-        id: database[index].id
-    }).then((res) => {
-        res.json().then((resJson) => {
-            dispatch(deleteData(index))
-            message.success('删除成功')
-        }).catch((error) => {
-            message.error('删除无效：' + error)
-        })
-    }).catch((error) => {
-        message.error('删除请求失败：' + error)
-    })
-}
-
-
-
-export const dispatcherAsync = (fnName, chunks = null) => {
-    return (dispatch, getState) => {
-        fn[fnName](dispatch, getState, chunks)
+    } catch (error) {
+        message.error('读取数据失败:' + error)
     }
 }
 
-const fn = {
+const Upload = function* (others) {
+    const { name, url } = others.uploadData
+    try {
+        const state = yield select(state => state.ExerciseDatabase)
+        yield put({
+            type: 'SET_STATE',
+            state: { ...state, uploadLoading: true }
+        })
+
+        let res = yield call(request.Post, {
+            url: Url,
+            jsonData: { name: name, url: url }
+        })
+        let json = yield res.json()
+        let changedDatabase = { ...json, loading: false }
+        yield put({
+            type: 'SET_STATE',
+            state: { ...state, database: [changedDatabase, ...state.database], uploadLoading: false }
+        })
+        message.success('上传数据成功!')
+    } catch (error) {
+        message.error('上传数据失败:' + error)
+    }
+}
+
+const Delete = function* (others) {
+    const state = yield select(state => state.ExerciseDatabase)
+    const { database } = state
+    const { index } = others
+
+    try {
+        let res = yield call(request.Delete, {
+            url: Url,
+            id: database[index].id
+        })
+        let newDatabase = database.filter((item, idx) => {
+            if (idx !== index) {
+                return item
+            }
+        })
+        yield put({ type: "SET_STATE", state: { ...state, database: newDatabase } })
+        message.success('删除成功')
+    } catch (error) {
+        message.error('删除失败：' + error)
+    }
+
+}
+
+
+const takeFn = {
     fetchDatabase: fetchDatabase,
-    fetchUpload: fetchUpload,
-    fetchDelete: fetchDelete
+    Upload: Upload,
+    Delete: Delete
+}
+
+export const watchSagaDatabase = function* () {
+    var Fn = []
+    for (let key in takeFn) {
+        Fn.push(key)
+    }
+    while (true) {
+        const { type, ...others } = yield take(Fn)
+        yield call(takeFn[type], others)
+    }
 }

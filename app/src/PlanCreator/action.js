@@ -8,6 +8,11 @@ const getDatabase = (database) => ({
     database: database
 })
 
+export const addTab = () => ({
+    type: "AddTab"
+})
+
+
 export const getDatabaseAsync = (node) => {
     return (dispatch, getState) => {
         fetch(Url, {
@@ -27,3 +32,4 @@ export const getDatabaseAsync = (node) => {
         })
     }
 }
+

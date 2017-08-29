@@ -78,9 +78,7 @@ class ExerciseDatabase extends Component {
                 return
             }
         }
-        this.setState({ loading: true })
-        let chunk = { ...uploadData, node: this }
-        this.props.Upload(chunk)
+        this.props.Upload(uploadData)
     }
 
     componentDidMount() {
@@ -105,7 +103,7 @@ class ExerciseDatabase extends Component {
                     addHandle={this.addHandle}
                     added={this.state.added}
                     color={this.state.color}
-                    loading={this.state.loading}
+                    loading={this.props.uploadLoading}
                     Upload={this.Upload}
                 />
                 <div className='ExerciseBoard'>
@@ -129,18 +127,20 @@ class ExerciseDatabase extends Component {
 }
 
 const mapState = (state) => {
-    const { database, pageState } = state.ExerciseDatabase
+    const { database, pageState, uploadLoading } = state.ExerciseDatabase
+
     return {
         database: database,
-        pageLoading: pageState.loading
+        pageLoading: pageState.loading,
+        uploadLoading: uploadLoading || false
     }
 }
 
 const mapDispach = (dispatch) => {
     return {
-        getDatabase: () => { dispatch(dispatcherAsync('fetchDatabase')) },
-        Upload: (uploadData) => { dispatch(dispatcherAsync('fetchUpload', uploadData)) },
-        Delete: (index) => { dispatch(dispatcherAsync('fetchDelete', index)) }
+        getDatabase: () => dispatch({ type: 'fetchDatabase' }),
+        Upload: (uploadData) => dispatch({ type: 'Upload', uploadData: uploadData }),
+        Delete: (index) => { dispatch({ type: 'Delete', index: index }) }
     }
 }
 

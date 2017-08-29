@@ -37,8 +37,10 @@
   },
   "dependencies": {
     "antd": "^2.12.3",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "redux-saga": "^0.15.6",
     "redux-thunk": "^2.2.0"
   }
 }

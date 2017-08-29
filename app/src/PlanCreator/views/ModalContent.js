@@ -13,7 +13,7 @@ const ChooseExercise = ({ database }) => {
     return (
         <div>
             <div style={{ display: 'flex', marginTop: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
-
+                <img onlo/>
                 {database.map((item, index) => {
                     return (
                         <Exercise

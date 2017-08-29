@@ -1,4 +1,5 @@
 const Post = ({ url, jsonData }) => {
+    console.log(jsonData)
     return fetch(url, {
         method: 'POST',
         body: JSON.stringify(jsonData),
