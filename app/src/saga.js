@@ -1,9 +1,11 @@
 import { fork, take } from 'redux-saga/effects'
 
-import { actions } from './ExerciseDatabase'
+import { actions as ExerciseDatabase } from './ExerciseDatabase'
+import { actions as PlanCreator } from './PlanCreator'
 
 export default function* rootSaga() {
     yield [
-        fork(actions.watchSagaDatabase)
+        fork(ExerciseDatabase.watchSagaDatabase),
+        fork(PlanCreator.watchSagaPlanCreator)
     ]
 }

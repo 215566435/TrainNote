@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { Tabs, Button } from 'antd'
 
 import TapItem from './TapItem'
-import { addTab } from '../action'
 
 import './PlanCreator.less'
 
@@ -17,31 +16,48 @@ function callback(key) {
 class PlanCreator extends Component {
     constructor(props) {
         super(...props)
+        this.onchange = this.onchange.bind(this)
+    }
+    onchange(key) {
+        this.props.onchange(key)
     }
     render() {
         return (
             <div style={{ marginTop: '8px', padding: 24, background: '#fff' }}>
                 <div style={{ marginBottom: 16 }}>
                     <Button onClick={this.props.add}>ADD</Button>
+
                 </div>
-                <Tabs defaultActiveKey="1" type="editable-card" hideAdd={true} onChange={callback}>
-                    <TabPane tab="Tab 1" key="1"><TapItem /></TabPane>
-                    <TabPane tab="Tab 2" key="2"><TapItem /></TabPane>
-                    <TabPane tab="Tab 3" key="3"><TapItem /></TabPane>
+                <Tabs
+                    activeKey={`${this.props.activeTab}`}
+                    type="editable-card"
+                    hideAdd={true}
+                    onChange={this.onchange}
+                >
+                    {this.props.tabs.map((item, index) => {
+                        console.log(this.props.tabs.length)
+                        return (
+                            <TabPane tab={`Day ${index + 1}`} key={index + 1}><TapItem /></TabPane>
+                        )
+                    })}
                 </Tabs>
             </div>
         )
     }
 }
 
-const mapState = () => {
-
+const mapState = (state) => {
+    return {
+        tabs: state.PlanCreator.Tab,
+        activeTab: state.PlanCreator.activeTab || 1
+    }
 }
 
 const mapDispatch = (dispatch) => {
     return {
-        add: () => dispatch(addTab())
+        add: () => dispatch({ type: 'addTab' }),
+        onchange: (key) => dispatch({ type: 'activeTab', key: key })
     }
 }
 
-export default connect()(PlanCreator)
+export default connect(mapState, mapDispatch)(PlanCreator)

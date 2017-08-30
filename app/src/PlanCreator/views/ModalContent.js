@@ -3,6 +3,7 @@ import { Component } from 'react'
 import { connect } from 'react-redux'
 import { Pagination, Steps, Button, Input, Icon } from 'antd'
 
+
 import { Exercise } from '../../PlanDashboard/views/planContent'
 import {getDatabaseAsync} from '../action'
 
@@ -13,7 +14,6 @@ const ChooseExercise = ({ database }) => {
     return (
         <div>
             <div style={{ display: 'flex', marginTop: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <img onlo/>
                 {database.map((item, index) => {
                     return (
                         <Exercise
@@ -109,6 +109,7 @@ class ModalContent extends React.Component {
 }
 
 const mapState = (state) => {
+    
     return {
         database: state.ExerciseDatabase.database
     }

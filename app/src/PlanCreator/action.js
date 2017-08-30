@@ -1,35 +1,55 @@
 import request from '../NetWorkUtils/request'
 import { message } from 'antd';
+import { call, put, take, select } from 'redux-saga/effects';
 
 const Url = 'http://127.0.0.1:3000/api/exercise'
 
-const getDatabase = (database) => ({
-    type: "GET_DATABASE",
-    database: database
+const setState = ({ state }) => ({
+    type: 'SET_STATE_PLANCREATOR',
+    state: state
 })
 
-export const addTab = () => ({
-    type: "AddTab"
-})
-
-
-export const getDatabaseAsync = (node) => {
-    return (dispatch, getState) => {
-        fetch(Url, {
-            method: 'GET'
-        }).then((res) => {
-            res.json().then((resJson) => {
-                let fixedRes = resJson.map((item) => {
-                    let i = item
-                    i['loading'] = false
-                    return i
-                })
-                message.success('读取数据成功')
-                dispatch(getDatabase(fixedRes))
-            }).catch((error) => {
-                message.error('读取数据失败:' + error)
-            })
-        })
+const addTab = function* () {
+   
+    try {
+        let state = yield select(state => state.PlanCreator)
+        let Tab = state.Tab
+        let newTab = [...Tab, { title: 'dog' }]
+        console.log(newTab)
+        yield put(setState({
+            state: { ...state, Tab: newTab, activeTab: newTab.length }
+        }))
+    } catch (error) {
+        message.error('出错:' + error)
     }
 }
 
+const activeTab = function* (others) {
+    try {
+        let state = yield select(state => state.PlanCreator)
+        message.success('进来了')
+        yield put(setState({
+            state: { ...state, activeTab: others.key }
+        }))
+    } catch (error) {
+        message.error('出错:' + error)
+    }
+}
+
+
+
+const takeFn = {
+    addTab: addTab,
+    activeTab: activeTab
+}
+
+export const watchSagaPlanCreator = function* () {
+    var Fn = []
+    for (let key in takeFn) {
+        Fn.push(key)
+    }
+    while (true) {
+        const { type, ...others } = yield take(Fn)
+        yield call(takeFn[type], others)
+    }
+}
