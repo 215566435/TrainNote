@@ -5,22 +5,28 @@ import { Pagination, Steps, Button, Input, Icon } from 'antd'
 
 
 import { Exercise } from '../../PlanDashboard/views/planContent'
-import {getDatabaseAsync} from '../action'
 
 const Step = Steps.Step
 const InputGroup = Input.Group
 
-const ChooseExercise = ({ database }) => {
+const ChooseExercise = ({ database, choose }) => {
     return (
         <div>
             <div style={{ display: 'flex', marginTop: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
                 {database.map((item, index) => {
                     return (
-                        <Exercise
+                        <div
+                            className='Exercise clickable'
+                            onClick={() => choose(index)}
                             key={index}
-                            title={item.name}
-                            url={item.url}
-                            width={120} />
+                        >
+                            <Exercise
+                                key={index}
+                                title={item.name}
+                                url={item.url}
+                                width={120}
+                            />
+                        </div>
                     )
                 })}
             </div>
@@ -31,22 +37,22 @@ const ChooseExercise = ({ database }) => {
 }
 
 class EditExercise extends React.Component {
-    state = {
-        hover: false
-    }
-    setBtnVisiable(Visiable) {
-        this.setState({ hover: Visiable })
-    }
     render() {
+        console.log(this.props.choosenItem)
         return (
-            <div onMouseOver={() => this.setBtnVisiable(true)} onMouseLeave={() => this.setBtnVisiable(false)}>
+            <div >
+                <Exercise
+                    title={this.props.choosenItem.name}
+                    url={this.props.choosenItem.url}
+                    width={120}
+                />
                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                     <InputGroup compact size="large">
                         <Input style={{ width: 60 }} placeholder='组数' />
                         <Input style={{ width: 60 }} placeholder='次数' />
                         <Input style={{ width: 80 }} placeholder='重量（kg）' />
                     </InputGroup>
-                    <div className={this.state.hover ? 'EditExercise-btn-group show' : 'EditExercise-btn-group cover'}>
+                    <div className= 'EditExercise-btn-group show'>
                         <Button style={{ marginLeft: 2 }}><Icon style={{ fontSize: 20 }} type="copy" /></Button>
                         <Button style={{ marginLeft: 2 }}><Icon style={{ fontSize: 20 }} type="delete" /></Button>
                     </div>
@@ -64,6 +70,7 @@ class ModalContent extends React.Component {
         }
         this.next = this.next.bind(this)
         this.pre = this.pre.bind(this)
+        this.choose = this.choose.bind(this)
     }
     next() {
         this.setState({
@@ -78,8 +85,12 @@ class ModalContent extends React.Component {
     }
 
     componentDidMount() {
-        if(this.props.database.length != 0)return
-        this.props.getDatabaseAsync()
+        if (this.props.database.length != 0) return
+        this.props.fetchDatabase()
+    }
+    choose(index) {
+        this.props.choose(index)
+        this.next()
     }
     render() {
         const { current } = this.state
@@ -94,12 +105,17 @@ class ModalContent extends React.Component {
                         this.state.current == 0 ?
                             <ChooseExercise
                                 database={this.props.database}
-                            /> :
+                                choose={this.choose}
+                            />
+                            :
                             this.state.current == 1 ?
-                                <EditExercise /> : ''
+                                <EditExercise
+                                    choosenItem={this.props.choosenItem}
+                                />
+                                : ''
                     }
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
+                <div style={{ display:this.state.current == 1?'flex':'none', justifyContent: 'space-between', marginTop: 16 }}>
                     <Button type='dashed' onClick={this.pre}>上一步</Button>
                     <Button type='primary' onClick={this.next}>下一步</Button>
                 </div>
@@ -109,15 +125,19 @@ class ModalContent extends React.Component {
 }
 
 const mapState = (state) => {
-    
+    const { choosen } = state.PlanCreator
+    const { database } = state.ExerciseDatabase
+    console.log(state.PlanCreator)
     return {
-        database: state.ExerciseDatabase.database
+        database: database,
+        choosenItem: database[choosen]
     }
 }
 const mapDispach = (dispach) => {
     return {
-        getDatabaseAsync: () => { dispach(getDatabaseAsync()) }
+        fetchDatabase: () => { dispach({ type: 'fetchDatabase' }) },
+        choose: (index) => { dispach({ type: 'ChooseExercise', index: index }) }
     }
 }
 
-export default connect(mapState,mapDispach)(ModalContent)
+export default connect(mapState, mapDispach)(ModalContent)

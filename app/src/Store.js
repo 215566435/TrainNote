@@ -28,7 +28,8 @@ const middlewares = [thunkMiddleware, sagaMiddleware];
 
 const storeEnhancers = compose(
   applyMiddleware(...middlewares),
-  (win && win.devToolsExtension) ? win.devToolsExtension() : (f) => f,
+  (win && win.devToolsExtension) ? win.__REDUX_DEVTOOLS_EXTENSION__ && win.__REDUX_DEVTOOLS_EXTENSION__() : (f) => f,
+  
 );
 
 const enhancedStore = createStore(reducer, {}, storeEnhancers)
