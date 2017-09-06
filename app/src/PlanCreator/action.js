@@ -16,7 +16,8 @@ const addTab = function* () {
         let id = Date.now()
         let newTab = [...Tab, {
             title: '新的一天',
-            id: id
+            id: id,
+            ModalVisible: false
         }]
         yield put(setState({
             state: { ...state, Tab: newTab, activeTab: `${id}` }
@@ -59,7 +60,6 @@ const delTab = function* (others) {
 
 const editTitle = function* (others) {
     try {
-
         let state = yield select(state => state.PlanCreator)
         const { Tab } = state
         let newTab = Tab.map((item, index) => {
@@ -75,19 +75,116 @@ const editTitle = function* (others) {
     }
 }
 const TabClick = function* (others) {
-    console.log('哈哈:',others)
+    console.log('哈哈:', others)
 }
 
 const ChooseExercise = function* (others) {
     console.log(others)
     try {
         let state = yield select(state => state.PlanCreator)
-        yield put({ type: 'SET_STATE_PLANCREATOR', state: { ...state, choosen: others.index } })
+        yield put({
+            type: 'SET_STATE_PLANCREATOR',
+            state: {
+                ...state,
+                choosenIndex: others.index,
+                sets: []
+            }
+        })
     } catch (e) {
 
     }
-
 }
+
+const addSet = function* () {
+    console.log("addSet")
+    try {
+        const state = yield select(state => state.PlanCreator)
+        const id = Date.now()
+        yield put({
+            type: 'SET_STATE_PLANCREATOR',
+            state: {
+                ...state,
+                sets: [
+                    { id: id, rap: 0, weight: 0 },
+                    ...state.sets
+                ],
+            }
+        })
+    } catch (e) {
+        message.error(e)
+    }
+}
+
+const delSet = function* (others) {
+    try {
+        const state = yield select(state => state.PlanCreator)
+        const { id } = others
+        yield put({
+            type: 'SET_STATE_PLANCREATOR',
+            state: {
+                ...state,
+                sets: state.sets.filter((item, index) => {
+                    if (item.id !== id) {
+                        return item
+                    }
+                }),
+            }
+        })
+    } catch (e) {
+        message.error(e)
+    }
+}
+
+const setAddModalVisible = function* (others) {
+    try {
+        console.log(others)
+        const state = yield select(state => state.PlanCreator)
+        const { Tab } = state
+        let newTab = Tab.map((item, index) => {
+            if (item.id == state.activeTab) {
+
+                return { ...item, ModalVisible: others.condition }
+            }
+            return item
+        })
+
+        yield put({
+            type: 'SET_STATE_PLANCREATOR',
+            state: {
+                ...state,
+                Tab: newTab
+            }
+        })
+    } catch (e) {
+        message.error(e)
+    }
+}
+
+const editDone = function* (others) {
+    try {
+
+        const state = yield select(state => state.PlanCreator)
+        const { Tab } = state
+        let newTab = Tab.map((item, index) => {
+            if (item.id == state.activeTab) {
+
+                return { ...item, ModalVisible: false }
+            }
+            return item
+        })
+
+        yield put({
+            type: 'SET_STATE_PLANCREATOR',
+            state: {
+                ...state,
+                Tab: newTab
+            }
+        })
+    } catch (e) {
+        message.error(e)
+    }
+}
+
 
 const takeFn = {
     addTab: addTab,
@@ -95,7 +192,11 @@ const takeFn = {
     delTab: delTab,
     editTitle: editTitle,
     ChooseExercise: ChooseExercise,
-    TabClick: TabClick
+    TabClick: TabClick,
+    addSet: addSet,
+    delSet: delSet,
+    editDone: editDone,
+    setAddModalVisible: setAddModalVisible
 }
 
 export const watchSagaPlanCreator = function* () {

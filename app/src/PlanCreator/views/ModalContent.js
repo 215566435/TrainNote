@@ -18,7 +18,7 @@ const ChooseExercise = ({ database, choose }) => {
                         <div
                             className='Exercise clickable'
                             onClick={() => choose(index)}
-                            key={index}
+                            key={item.id}
                         >
                             <Exercise
                                 key={index}
@@ -36,30 +36,41 @@ const ChooseExercise = ({ database, choose }) => {
     )
 }
 
-class EditExercise extends React.Component {
-    render() {
-        console.log(this.props.choosenItem)
-        return (
-            <div >
-                <Exercise
-                    title={this.props.choosenItem.name}
-                    url={this.props.choosenItem.url}
-                    width={120}
-                />
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                    <InputGroup compact size="large">
-                        <Input style={{ width: 60 }} placeholder='组数' />
-                        <Input style={{ width: 60 }} placeholder='次数' />
-                        <Input style={{ width: 80 }} placeholder='重量（kg）' />
-                    </InputGroup>
-                    <div className= 'EditExercise-btn-group show'>
-                        <Button style={{ marginLeft: 2 }}><Icon style={{ fontSize: 20 }} type="copy" /></Button>
-                        <Button style={{ marginLeft: 2 }}><Icon style={{ fontSize: 20 }} type="delete" /></Button>
-                    </div>
-                </div>
+const ExerciseInput = ({ delSet, index }) => {
+    return (
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+            <InputGroup compact size="large">
+                <Input addonBefore={`第${index + 1}组`} style={{ width: 100 }} placeholder='次数' />
+                <Input style={{ width: 80 }} placeholder='重量（kg）' />
+            </InputGroup>
+            <div className='EditExercise-btn-group show'>
+                <Button style={{ marginLeft: 2 }}><Icon style={{ fontSize: 20 }} type="copy" /></Button>
+                <Button onClick={delSet} style={{ marginLeft: 2 }}><Icon style={{ fontSize: 20 }} type="delete" /></Button>
             </div>
-        )
-    }
+        </div>
+    )
+}
+
+const EditExercise = ({ choosenItem, Sets, addSet, delSet }) => {
+    return (
+        <div >
+            <Exercise
+                title={choosenItem.name}
+                url={choosenItem.url}
+                width={120}
+            />
+            <div>
+                {Sets.map((item, index) => {
+                    return (<ExerciseInput
+                        key={item.id}
+                        index={index}
+                        delSet={() => delSet(item.id)}
+                    />)
+                })}
+            </div>
+            <Button onClick={addSet} style={{ marginBottom: 8 }} icon='plus' ></Button>
+        </div>
+    )
 }
 
 class ModalContent extends React.Component {
@@ -68,13 +79,14 @@ class ModalContent extends React.Component {
         this.state = {
             current: 0
         }
-        this.next = this.next.bind(this)
+        this.done = this.done.bind(this)
         this.pre = this.pre.bind(this)
         this.choose = this.choose.bind(this)
     }
-    next() {
+    done() {
+        this.props.editDone()
         this.setState({
-            current: this.state.current + 1
+            current: 0
         })
     }
     pre() {
@@ -83,15 +95,18 @@ class ModalContent extends React.Component {
             current: this.state.current - 1
         })
     }
+    choose(index) {
+        this.props.choose(index)
+        this.setState({
+            current: this.state.current + 1
+        })
+    }
 
     componentDidMount() {
         if (this.props.database.length != 0) return
         this.props.fetchDatabase()
     }
-    choose(index) {
-        this.props.choose(index)
-        this.next()
-    }
+
     render() {
         const { current } = this.state
         return (
@@ -111,13 +126,16 @@ class ModalContent extends React.Component {
                             this.state.current == 1 ?
                                 <EditExercise
                                     choosenItem={this.props.choosenItem}
+                                    Sets={this.props.Sets}
+                                    addSet={this.props.addSet}
+                                    delSet={this.props.delSet}
                                 />
-                                : ''
+                                : null
                     }
                 </div>
-                <div style={{ display:this.state.current == 1?'flex':'none', justifyContent: 'space-between', marginTop: 16 }}>
+                <div style={{ display: this.state.current == 1 ? 'flex' : 'none', justifyContent: 'space-between', marginTop: 16 }}>
                     <Button type='dashed' onClick={this.pre}>上一步</Button>
-                    <Button type='primary' onClick={this.next}>下一步</Button>
+                    <Button type='primary' onClick={this.done} >完成</Button>
                 </div>
             </div>
         )
@@ -125,18 +143,22 @@ class ModalContent extends React.Component {
 }
 
 const mapState = (state) => {
-    const { choosen } = state.PlanCreator
+    const { choosenIndex } = state.PlanCreator
+    const { sets } = state.PlanCreator
     const { database } = state.ExerciseDatabase
-    console.log(state.PlanCreator)
     return {
         database: database,
-        choosenItem: database[choosen]
+        choosenItem: database[choosenIndex],
+        Sets: sets
     }
 }
 const mapDispach = (dispach) => {
     return {
         fetchDatabase: () => { dispach({ type: 'fetchDatabase' }) },
-        choose: (index) => { dispach({ type: 'ChooseExercise', index: index }) }
+        choose: (index) => { dispach({ type: 'ChooseExercise', index: index }) },
+        addSet: () => { dispach({ type: 'addSet' }) },
+        delSet: (id) => { dispach({ type: 'delSet', id: id }) },
+        editDone: () => { dispach({ type: 'editDone' }) }
     }
 }
 

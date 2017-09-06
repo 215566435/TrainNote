@@ -8,9 +8,10 @@ import ModalContent from './ModalContent'
 
 const TabPane = Tabs.TabPane
 
-export default class TapItem extends Component {
+class TapItem extends Component {
     constructor(props) {
         super(...props)
+        console.log(props)
         this.edit = this.edit.bind(this)
         this.onTitleChange = this.onTitleChange.bind(this)
         this.state = {
@@ -22,7 +23,7 @@ export default class TapItem extends Component {
     }
 
     setAddModalVisible(AddModalVisible) {
-        this.setState({ addModal: AddModalVisible });
+        this.props.setAddModalVisible(AddModalVisible)
     }
     edit() {
         if (this.state.edited) {
@@ -66,8 +67,7 @@ export default class TapItem extends Component {
                     title="请选择动作"
                     footer={null}
                     wrapClassName="vertical-center-modal"
-                    visible={this.state.addModal}
-                    onOk={() => this.setAddModalVisible(false)}
+                    visible={this.props.ModalVisible}
                     onCancel={() => this.setAddModalVisible(false)}
                     maskClosable={false}
                 >
@@ -77,3 +77,30 @@ export default class TapItem extends Component {
         )
     }
 }
+
+const setVisible = ({ state, id }) => {
+    for (let row in state) {
+        if (state[row].id == id) {
+            return state[row].ModalVisible
+        }
+    }
+}
+
+const mapState = (state) => {
+    return {
+        ModalVisible: setVisible(
+            {
+                state: state.PlanCreator.Tab,
+                id: state.PlanCreator.activeTab
+            }
+        )
+    }
+}
+
+const mapDispatch = (dispatch) => {
+    return {
+        setAddModalVisible: (condition) => dispatch({ type: 'setAddModalVisible', condition: condition })
+    }
+}
+
+export default connect(mapState, mapDispatch)(TapItem)
