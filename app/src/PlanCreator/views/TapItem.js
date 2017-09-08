@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { Tabs, Button, Input, Icon, Modal } from 'antd'
 
 import ModalContent from './ModalContent'
+import { Exercise } from '../../PlanDashboard/views/planContent'
 
 const TabPane = Tabs.TabPane
 
@@ -56,6 +57,28 @@ class TapItem extends Component {
                 >
                     {this.state.edited ? '完成' : '修改标题'}
                 </Button>
+                <span style={{ display: 'flex', flexWrap: 'wrap', marginTop: 22 }}>
+                    {this.props.todayExe.map((item, index) => {
+                        const ExeContent = item.set.map((itm, idx) => {
+                            return (
+                                <p
+                                    key={itm.id}
+                                >
+                                    {`第${idx+1}组：${itm.rap}次，${itm.weight}kg`}
+                                </p>
+                            )
+                        })
+
+                        return (
+                            <Exercise
+                                url={item.url}
+                                title={item.name}
+                                key={item.id}
+                                content={ExeContent}
+                            />
+                        )
+                    })}
+                </span>
                 <div style={{ marginTop: 16 }}>
                     <Button
                         style={{ width: 240, height: 120 }} type='dashed'
@@ -86,6 +109,15 @@ const setVisible = ({ state, id }) => {
     }
 }
 
+const selectTodayExe = (state) => {
+    const { activeTab, Tab } = state
+    for (let row in Tab) {
+        if (Tab[row].id == activeTab) {
+            return Tab[row].todayExe
+        }
+    }
+}
+
 const mapState = (state) => {
     return {
         ModalVisible: setVisible(
@@ -93,7 +125,8 @@ const mapState = (state) => {
                 state: state.PlanCreator.Tab,
                 id: state.PlanCreator.activeTab
             }
-        )
+        ),
+        todayExe: selectTodayExe(state.PlanCreator)
     }
 }
 

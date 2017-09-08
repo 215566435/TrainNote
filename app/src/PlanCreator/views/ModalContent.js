@@ -36,12 +36,21 @@ const ChooseExercise = ({ database, choose }) => {
     )
 }
 
-const ExerciseInput = ({ delSet, index }) => {
+const ExerciseInput = ({ delSet, index, InputChange }) => {
     return (
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
             <InputGroup compact size="large">
-                <Input addonBefore={`第${index + 1}组`} style={{ width: 100 }} placeholder='次数' />
-                <Input style={{ width: 80 }} placeholder='重量（kg）' />
+                <Input
+                    addonBefore={`第${index + 1}组`}
+                    style={{ width: 100 }}
+                    placeholder='次数'
+                    onChange={(detail) => { InputChange({ type: 'rap', index: index, detail: detail }) }}
+                />
+                <Input
+                    style={{ width: 80 }}
+                    placeholder='重量（kg）'
+                    onChange={(detail) => { InputChange({ type: 'weight', index: index, detail: detail }) }}
+                />
             </InputGroup>
             <div className='EditExercise-btn-group show'>
                 <Button style={{ marginLeft: 2 }}><Icon style={{ fontSize: 20 }} type="copy" /></Button>
@@ -51,7 +60,7 @@ const ExerciseInput = ({ delSet, index }) => {
     )
 }
 
-const EditExercise = ({ choosenItem, Sets, addSet, delSet }) => {
+const EditExercise = ({ choosenItem, Sets, addSet, delSet, InputChange }) => {
     return (
         <div >
             <Exercise
@@ -65,6 +74,7 @@ const EditExercise = ({ choosenItem, Sets, addSet, delSet }) => {
                         key={item.id}
                         index={index}
                         delSet={() => delSet(item.id)}
+                        InputChange={InputChange}
                     />)
                 })}
             </div>
@@ -129,6 +139,7 @@ class ModalContent extends React.Component {
                                     Sets={this.props.Sets}
                                     addSet={this.props.addSet}
                                     delSet={this.props.delSet}
+                                    InputChange={this.props.InputChange}
                                 />
                                 : null
                     }
@@ -158,7 +169,8 @@ const mapDispach = (dispach) => {
         choose: (index) => { dispach({ type: 'ChooseExercise', index: index }) },
         addSet: () => { dispach({ type: 'addSet' }) },
         delSet: (id) => { dispach({ type: 'delSet', id: id }) },
-        editDone: () => { dispach({ type: 'editDone' }) }
+        editDone: () => { dispach({ type: 'editDone' }) },
+        InputChange: (bundle) => { dispach({ type: 'inputChange', bundle: bundle }) }
     }
 }
 

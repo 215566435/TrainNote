@@ -17,7 +17,7 @@ export const Exercise = ({ width, title, content, url, onDelete, loading = false
                 <div className="cardContent">
                     <div className="custom-card" >
                         <h3 >{fixedTitle}</h3>
-                        <p>{fixedContent}</p>
+                        <div>{fixedContent}</div>
                     </div>
                     {close ? <Button shape="circle" icon='close' onClick={onDelete} ></Button> : ''}
                 </div>

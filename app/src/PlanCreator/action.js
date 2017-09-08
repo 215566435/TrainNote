@@ -17,7 +17,8 @@ const addTab = function* () {
         let newTab = [...Tab, {
             title: '新的一天',
             id: id,
-            ModalVisible: false
+            ModalVisible: false,
+            todayExe: []
         }]
         yield put(setState({
             state: { ...state, Tab: newTab, activeTab: `${id}` }
@@ -105,8 +106,8 @@ const addSet = function* () {
             state: {
                 ...state,
                 sets: [
-                    { id: id, rap: 0, weight: 0 },
-                    ...state.sets
+                    ...state.sets,
+                    { id: id, rap: 0, weight: 0 }
                 ],
             }
         })
@@ -164,11 +165,26 @@ const editDone = function* (others) {
     try {
 
         const state = yield select(state => state.PlanCreator)
+        const database = yield select(state => state.ExerciseDatabase.database)
         const { Tab } = state
+        const newID = Date.now()
         let newTab = Tab.map((item, index) => {
             if (item.id == state.activeTab) {
-
-                return { ...item, ModalVisible: false }
+                const whichExe = database[state.choosenIndex]
+                const newExe = [
+                    ...item.todayExe,
+                    {
+                        id: newID,
+                        name: whichExe.name,
+                        url: whichExe.url,
+                        set: state.sets
+                    }
+                ]
+                return {
+                    ...item,
+                    ModalVisible: false,
+                    todayExe: newExe
+                }
             }
             return item
         })
@@ -185,6 +201,25 @@ const editDone = function* (others) {
     }
 }
 
+const inputChange = function* (others) {
+    const { value } = others.bundle.detail.target
+    const { type, index } = others.bundle
+
+    const state = yield select(state => state.PlanCreator)
+
+    let sets = state.sets
+    if (type == 'rap') sets[index].rap = value
+    if (type == 'weight') sets[index].weight = value
+    const newSet = Object.assign([], sets)
+    yield put({
+        type: 'SET_STATE_PLANCREATOR',
+        state: {
+            ...state,
+            sets: newSet
+        }
+    })
+
+}
 
 const takeFn = {
     addTab: addTab,
@@ -196,7 +231,8 @@ const takeFn = {
     addSet: addSet,
     delSet: delSet,
     editDone: editDone,
-    setAddModalVisible: setAddModalVisible
+    setAddModalVisible: setAddModalVisible,
+    inputChange: inputChange
 }
 
 export const watchSagaPlanCreator = function* () {
