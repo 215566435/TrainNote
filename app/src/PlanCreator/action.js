@@ -80,15 +80,26 @@ const TabClick = function* (others) {
 }
 
 const ChooseExercise = function* (others) {
-    console.log(others)
     try {
-        let state = yield select(state => state.PlanCreator)
+        const state = yield select(state => state.PlanCreator)
+        const database = yield select(state => state.ExerciseDatabase.database)
+        const newTab = state.Tab.map((item) => {
+            if (item.id == state.activeTab) {
+                return {
+                    ...item,
+                    ModalCurrent: 1
+                }
+            }
+            return item
+        })
         yield put({
             type: 'SET_STATE_PLANCREATOR',
             state: {
                 ...state,
-                choosenIndex: others.index,
-                sets: []
+                choosenName: database[others.index].name,
+                choosenUrl: database[others.index].url,
+                sets: [],
+                Tab: newTab
             }
         })
     } catch (e) {
@@ -97,7 +108,6 @@ const ChooseExercise = function* (others) {
 }
 
 const addSet = function* () {
-    console.log("addSet")
     try {
         const state = yield select(state => state.PlanCreator)
         const id = Date.now()
@@ -138,13 +148,16 @@ const delSet = function* (others) {
 
 const setAddModalVisible = function* (others) {
     try {
-        console.log(others)
         const state = yield select(state => state.PlanCreator)
         const { Tab } = state
+        const { ModalVisible, current } = others.condition
         let newTab = Tab.map((item, index) => {
             if (item.id == state.activeTab) {
-
-                return { ...item, ModalVisible: others.condition }
+                return {
+                    ...item,
+                    ModalVisible: ModalVisible,
+                    ModalCurrent: current
+                }
             }
             return item
         })
@@ -163,27 +176,41 @@ const setAddModalVisible = function* (others) {
 
 const editDone = function* (others) {
     try {
-
         const state = yield select(state => state.PlanCreator)
         const database = yield select(state => state.ExerciseDatabase.database)
         const { Tab } = state
         const newID = Date.now()
         let newTab = Tab.map((item, index) => {
             if (item.id == state.activeTab) {
-                const whichExe = database[state.choosenIndex]
-                const newExe = [
-                    ...item.todayExe,
-                    {
-                        id: newID,
-                        name: whichExe.name,
-                        url: whichExe.url,
-                        set: state.sets
-                    }
-                ]
+                let newExe
+                if (item.EditExe === true) {
+                    //双向绑定一个旧动作
+                    newExe = item.todayExe.map((itm) => {
+                        if (itm.id === item.EditID) {
+                            return {
+                                ...itm,
+                                set: state.sets
+                            }
+                        }
+                        return itm
+                    })
+                } else {
+                    //新建一个动作
+                    newExe = [
+                        ...item.todayExe,
+                        {
+                            id: newID,
+                            name: state.choosenName,
+                            url: state.choosenUrl,
+                            set: state.sets
+                        }
+                    ]
+                }
                 return {
                     ...item,
                     ModalVisible: false,
-                    todayExe: newExe
+                    todayExe: newExe,
+                    ModalCurrent: 0
                 }
             }
             return item
@@ -202,23 +229,58 @@ const editDone = function* (others) {
 }
 
 const inputChange = function* (others) {
-    const { value } = others.bundle.detail.target
-    const { type, index } = others.bundle
+    try {
+        const { value } = others.bundle.detail.target
+        const { type, index } = others.bundle
 
-    const state = yield select(state => state.PlanCreator)
+        const state = yield select(state => state.PlanCreator)
 
-    let sets = state.sets
-    if (type == 'rap') sets[index].rap = value
-    if (type == 'weight') sets[index].weight = value
-    const newSet = Object.assign([], sets)
-    yield put({
-        type: 'SET_STATE_PLANCREATOR',
-        state: {
-            ...state,
-            sets: newSet
-        }
-    })
+        let sets = state.sets
+        if (type == 'rap') sets[index].rap = value
+        if (type == 'weight') sets[index].weight = value
+        const newSet = Object.assign([], sets)
+        yield put({
+            type: 'SET_STATE_PLANCREATOR',
+            state: {
+                ...state,
+                sets: newSet
+            }
+        })
+    } catch (e) {
+        message.error(e)
+    }
+}
 
+const onEditExe = function* (others) {
+    try {
+        const state = yield select(state => state.PlanCreator)
+        const { id, name, url } = others.bundles
+        const { Tab } = state
+        let newTab = Tab.map((item, index) => {
+            if (item.id == state.activeTab) {
+                return {
+                    ...item,
+                    ModalVisible: true,
+                    ModalCurrent: 1,
+                    EditExe: true,
+                    EditID: id
+                }
+            }
+            return item
+        })
+
+        yield put({
+            type: 'SET_STATE_PLANCREATOR',
+            state: {
+                ...state,
+                Tab: newTab,
+                choosenName: name,
+                choosenUrl: url
+            }
+        })
+    } catch (e) {
+        message.error(e)
+    }
 }
 
 const takeFn = {
@@ -232,7 +294,8 @@ const takeFn = {
     delSet: delSet,
     editDone: editDone,
     setAddModalVisible: setAddModalVisible,
-    inputChange: inputChange
+    inputChange: inputChange,
+    onEditExe: onEditExe
 }
 
 export const watchSagaPlanCreator = function* () {

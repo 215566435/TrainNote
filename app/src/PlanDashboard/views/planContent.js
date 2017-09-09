@@ -1,6 +1,21 @@
 import React from 'react'
 import { Card, Icon, Button } from 'antd'
 
+export const ExerciseHOC = (props) => {
+    return class Wraping extends React.Component {
+        render() {
+            const { onclick } = props
+            console.log(onclick)
+            return (
+                <div className='ExerciseClickable' onClick={onclick}>
+                    <Exercise {...props} />
+                </div>
+            )
+        }
+    }
+}
+
+
 export const Exercise = ({ width, title, content, url, onDelete, loading = false, close = false }) => {
     let fixedWidth = width || 240
     let fixedTitle = title || '标题'

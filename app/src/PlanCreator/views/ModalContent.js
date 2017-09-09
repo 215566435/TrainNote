@@ -86,30 +86,18 @@ const EditExercise = ({ choosenItem, Sets, addSet, delSet, InputChange }) => {
 class ModalContent extends React.Component {
     constructor(prop) {
         super(...prop)
-        this.state = {
-            current: 0
-        }
         this.done = this.done.bind(this)
         this.pre = this.pre.bind(this)
         this.choose = this.choose.bind(this)
     }
     done() {
         this.props.editDone()
-        this.setState({
-            current: 0
-        })
     }
     pre() {
-        if (this.state.current == 0) return
-        this.setState({
-            current: this.state.current - 1
-        })
+        if (this.props.ModalCurrent == 0) return
     }
     choose(index) {
         this.props.choose(index)
-        this.setState({
-            current: this.state.current + 1
-        })
     }
 
     componentDidMount() {
@@ -118,22 +106,22 @@ class ModalContent extends React.Component {
     }
 
     render() {
-        const { current } = this.state
+        const { ModalCurrent } = this.props
         return (
             <div>
-                <Steps current={current}>
+                <Steps current={ModalCurrent}>
                     <Step key={0} title='选择动作' />
                     <Step key={1} title='设计内容' />
                 </Steps>
                 <div style={{ display: 'flex', marginTop: 16 }}>
                     {
-                        this.state.current == 0 ?
+                        ModalCurrent === 0 ?
                             <ChooseExercise
                                 database={this.props.database}
                                 choose={this.choose}
                             />
                             :
-                            this.state.current == 1 ?
+                            ModalCurrent === 1 ?
                                 <EditExercise
                                     choosenItem={this.props.choosenItem}
                                     Sets={this.props.Sets}
@@ -144,7 +132,7 @@ class ModalContent extends React.Component {
                                 : null
                     }
                 </div>
-                <div style={{ display: this.state.current == 1 ? 'flex' : 'none', justifyContent: 'space-between', marginTop: 16 }}>
+                <div style={{ display: ModalCurrent == 1 ? 'flex' : 'none', justifyContent: 'space-between', marginTop: 16 }}>
                     <Button type='dashed' onClick={this.pre}>上一步</Button>
                     <Button type='primary' onClick={this.done} >完成</Button>
                 </div>
@@ -153,14 +141,25 @@ class ModalContent extends React.Component {
     }
 }
 
+const ModalCurrentSelector = (state, activeTab) => {
+    for (let row in state.Tab) {
+        if (state.Tab[row].id == activeTab) {
+            return state.Tab[row].ModalCurrent
+        }
+    }
+}
+
 const mapState = (state) => {
-    const { choosenIndex } = state.PlanCreator
-    const { sets } = state.PlanCreator
+    const { choosenName, choosenUrl, sets, activeTab } = state.PlanCreator
     const { database } = state.ExerciseDatabase
     return {
         database: database,
-        choosenItem: database[choosenIndex],
-        Sets: sets
+        choosenItem: {
+            name: choosenName,
+            url: choosenUrl
+        },
+        Sets: sets,
+        ModalCurrent: ModalCurrentSelector(state.PlanCreator, activeTab)
     }
 }
 const mapDispach = (dispach) => {

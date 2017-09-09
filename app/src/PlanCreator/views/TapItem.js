@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { Tabs, Button, Input, Icon, Modal } from 'antd'
 
 import ModalContent from './ModalContent'
-import { Exercise } from '../../PlanDashboard/views/planContent'
+import { Exercise, ExerciseHOC } from '../../PlanDashboard/views/planContent'
 
 const TabPane = Tabs.TabPane
 
@@ -23,8 +23,11 @@ class TapItem extends Component {
         }
     }
 
-    setAddModalVisible(AddModalVisible) {
-        this.props.setAddModalVisible(AddModalVisible)
+    setAddModalVisible(AddModalVisible, current) {
+        this.props.setAddModalVisible({
+            ModalVisible: AddModalVisible,
+            current: current
+        })
     }
     edit() {
         if (this.state.edited) {
@@ -45,7 +48,6 @@ class TapItem extends Component {
     }
 
     render() {
-
         return (
             <div >
                 <div className={this.state.edited ? 'tapInput edit' : 'tapInput close'}>
@@ -64,17 +66,24 @@ class TapItem extends Component {
                                 <p
                                     key={itm.id}
                                 >
-                                    {`第${idx+1}组：${itm.rap}次，${itm.weight}kg`}
+                                    {`第${idx + 1}组：${itm.rap}次，${itm.weight}kg`}
                                 </p>
                             )
                         })
-
+                        const ExerciseClick = ExerciseHOC({
+                            url: item.url,
+                            title: item.name,
+                            key: item.id,
+                            content: ExeContent,
+                            onclick: () => this.props.onEditExe({
+                                id: item.id,
+                                name: item.name,
+                                url: item.url
+                            })
+                        })
                         return (
-                            <Exercise
-                                url={item.url}
-                                title={item.name}
+                            <ExerciseClick
                                 key={item.id}
-                                content={ExeContent}
                             />
                         )
                     })}
@@ -82,7 +91,7 @@ class TapItem extends Component {
                 <div style={{ marginTop: 16 }}>
                     <Button
                         style={{ width: 240, height: 120 }} type='dashed'
-                        onClick={() => this.setAddModalVisible(true)}>
+                        onClick={() => this.setAddModalVisible(true, 0)}>
                         <Icon style={{ fontSize: 25 }} type="plus" />
                     </Button>
                 </div>
@@ -91,7 +100,7 @@ class TapItem extends Component {
                     footer={null}
                     wrapClassName="vertical-center-modal"
                     visible={this.props.ModalVisible}
-                    onCancel={() => this.setAddModalVisible(false)}
+                    onCancel={() => this.setAddModalVisible(false, 0)}
                     maskClosable={false}
                 >
                     <ModalContent />
@@ -132,7 +141,8 @@ const mapState = (state) => {
 
 const mapDispatch = (dispatch) => {
     return {
-        setAddModalVisible: (condition) => dispatch({ type: 'setAddModalVisible', condition: condition })
+        setAddModalVisible: (condition) => dispatch({ type: 'setAddModalVisible', condition: condition }),
+        onEditExe: (bundles) => dispatch({ type: 'onEditExe', bundles: bundles })
     }
 }
 
