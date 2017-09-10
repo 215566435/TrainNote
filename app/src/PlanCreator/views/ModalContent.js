@@ -36,7 +36,9 @@ const ChooseExercise = ({ database, choose }) => {
     )
 }
 
-const ExerciseInput = ({ delSet, index, InputChange }) => {
+const ExerciseInput = ({ copySet, delSet, index, InputChange, rap, weight }) => {
+    const fixedRap = rap ? rap : ''
+    const fixedWeight = weight ? weight : ''
     return (
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
             <InputGroup compact size="large">
@@ -45,22 +47,24 @@ const ExerciseInput = ({ delSet, index, InputChange }) => {
                     style={{ width: 100 }}
                     placeholder='次数'
                     onChange={(detail) => { InputChange({ type: 'rap', index: index, detail: detail }) }}
+                    value={fixedRap}
                 />
                 <Input
                     style={{ width: 80 }}
                     placeholder='重量（kg）'
                     onChange={(detail) => { InputChange({ type: 'weight', index: index, detail: detail }) }}
+                    value={fixedWeight}
                 />
             </InputGroup>
             <div className='EditExercise-btn-group show'>
-                <Button style={{ marginLeft: 2 }}><Icon style={{ fontSize: 20 }} type="copy" /></Button>
+                <Button onClick={copySet} style={{ marginLeft: 2 }}><Icon style={{ fontSize: 20 }} type="copy" /></Button>
                 <Button onClick={delSet} style={{ marginLeft: 2 }}><Icon style={{ fontSize: 20 }} type="delete" /></Button>
             </div>
         </div>
     )
 }
 
-const EditExercise = ({ choosenItem, Sets, addSet, delSet, InputChange }) => {
+const EditExercise = ({ choosenItem, Sets, addSet, copySet, delSet, InputChange }) => {
     return (
         <div >
             <Exercise
@@ -73,8 +77,11 @@ const EditExercise = ({ choosenItem, Sets, addSet, delSet, InputChange }) => {
                     return (<ExerciseInput
                         key={item.id}
                         index={index}
+                        copySet={() => copySet(item.id)}
                         delSet={() => delSet(item.id)}
                         InputChange={InputChange}
+                        rap={item.rap}
+                        weight={item.weight}
                     />)
                 })}
             </div>
@@ -126,6 +133,7 @@ class ModalContent extends React.Component {
                                     choosenItem={this.props.choosenItem}
                                     Sets={this.props.Sets}
                                     addSet={this.props.addSet}
+                                    copySet={this.props.copySet}
                                     delSet={this.props.delSet}
                                     InputChange={this.props.InputChange}
                                 />
@@ -167,6 +175,7 @@ const mapDispach = (dispach) => {
         fetchDatabase: () => { dispach({ type: 'fetchDatabase' }) },
         choose: (index) => { dispach({ type: 'ChooseExercise', index: index }) },
         addSet: () => { dispach({ type: 'addSet' }) },
+        copySet: (id) => { dispach({ type: 'copySet', id: id }) },
         delSet: (id) => { dispach({ type: 'delSet', id: id }) },
         editDone: () => { dispach({ type: 'editDone' }) },
         InputChange: (bundle) => { dispach({ type: 'inputChange', bundle: bundle }) }

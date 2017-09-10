@@ -5,7 +5,6 @@ export const ExerciseHOC = (props) => {
     return class Wraping extends React.Component {
         render() {
             const { onclick } = props
-            console.log(onclick)
             return (
                 <div className='ExerciseClickable' onClick={onclick}>
                     <Exercise {...props} />

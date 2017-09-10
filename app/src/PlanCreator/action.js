@@ -210,7 +210,8 @@ const editDone = function* (others) {
                     ...item,
                     ModalVisible: false,
                     todayExe: newExe,
-                    ModalCurrent: 0
+                    ModalCurrent: 0,
+                    EditExe: false
                 }
             }
             return item
@@ -256,8 +257,15 @@ const onEditExe = function* (others) {
         const state = yield select(state => state.PlanCreator)
         const { id, name, url } = others.bundles
         const { Tab } = state
+        let currentSet = []
         let newTab = Tab.map((item, index) => {
             if (item.id == state.activeTab) {
+                item.todayExe.forEach((itm) => {
+                    if (itm.id === id) {
+                        currentSet = itm.set
+                    }
+                    return
+                })
                 return {
                     ...item,
                     ModalVisible: true,
@@ -268,15 +276,37 @@ const onEditExe = function* (others) {
             }
             return item
         })
-
         yield put({
             type: 'SET_STATE_PLANCREATOR',
             state: {
                 ...state,
                 Tab: newTab,
                 choosenName: name,
-                choosenUrl: url
+                choosenUrl: url,
+                sets: currentSet
             }
+        })
+    } catch (e) {
+        message.error(e)
+    }
+}
+
+const copySet = function* (others) {
+    try {
+        const state = yield select(state => state.PlanCreator)
+        const { id } = others
+        const { sets } = state
+        const newID = Date.now()
+        let oldItem = sets.filter((item) => {
+            if (item.id === id) {
+                return item
+            }
+        })
+        let newItem = { ...oldItem[0], id: newID }
+        const newSet = [...sets, newItem]
+        yield put({
+            type: 'SET_STATE_PLANCREATOR',
+            state: { ...state, sets: newSet }
         })
     } catch (e) {
         message.error(e)
@@ -295,7 +325,8 @@ const takeFn = {
     editDone: editDone,
     setAddModalVisible: setAddModalVisible,
     inputChange: inputChange,
-    onEditExe: onEditExe
+    onEditExe: onEditExe,
+    copySet: copySet
 }
 
 export const watchSagaPlanCreator = function* () {
