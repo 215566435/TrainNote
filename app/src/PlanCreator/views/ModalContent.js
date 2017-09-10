@@ -102,6 +102,10 @@ class ModalContent extends React.Component {
     }
     pre() {
         if (this.props.ModalCurrent == 0) return
+        this.props.setAddModalVisible({
+            ModalVisible: true,
+            current: this.props.ModalCurrent - 1
+        })
     }
     choose(index) {
         this.props.choose(index)
@@ -170,16 +174,17 @@ const mapState = (state) => {
         ModalCurrent: ModalCurrentSelector(state.PlanCreator, activeTab)
     }
 }
-const mapDispach = (dispach) => {
+const mapDispatch = (dispatch) => {
     return {
-        fetchDatabase: () => { dispach({ type: 'fetchDatabase' }) },
-        choose: (index) => { dispach({ type: 'ChooseExercise', index: index }) },
-        addSet: () => { dispach({ type: 'addSet' }) },
-        copySet: (id) => { dispach({ type: 'copySet', id: id }) },
-        delSet: (id) => { dispach({ type: 'delSet', id: id }) },
-        editDone: () => { dispach({ type: 'editDone' }) },
-        InputChange: (bundle) => { dispach({ type: 'inputChange', bundle: bundle }) }
+        fetchDatabase: () => { dispatch({ type: 'fetchDatabase' }) },
+        setAddModalVisible: (condition) => dispatch({ type: 'setAddModalVisible', condition: condition }),
+        choose: (index) => { dispatch({ type: 'ChooseExercise', index: index }) },
+        addSet: () => { dispatch({ type: 'addSet' }) },
+        copySet: (id) => { dispatch({ type: 'copySet', id: id }) },
+        delSet: (id) => { dispatch({ type: 'delSet', id: id }) },
+        editDone: () => { dispatch({ type: 'editDone' }) },
+        InputChange: (bundle) => { dispatch({ type: 'inputChange', bundle: bundle }) }
     }
 }
 
-export default connect(mapState, mapDispach)(ModalContent)
+export default connect(mapState, mapDispatch)(ModalContent)

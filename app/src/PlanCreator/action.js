@@ -184,12 +184,14 @@ const editDone = function* (others) {
             if (item.id == state.activeTab) {
                 let newExe
                 if (item.EditExe === true) {
-                    //双向绑定一个旧动作
+                    //双向绑定一个需要修改的动作
                     newExe = item.todayExe.map((itm) => {
                         if (itm.id === item.EditID) {
                             return {
                                 ...itm,
-                                set: state.sets
+                                set: state.sets,
+                                name:state.choosenName,
+                                url:state.choosenUrl
                             }
                         }
                         return itm
