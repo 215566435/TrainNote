@@ -9,10 +9,28 @@ import { Exercise, ExerciseHOC } from '../../PlanDashboard/views/planContent'
 
 const TabPane = Tabs.TabPane
 
+
+class WrapModal extends React.Component {
+    render() {
+        return (
+            <Modal
+                title="请选择动作"
+                footer={null}
+                wrapClassName="vertical-center-modal"
+                visible={this.props.ModalVisible}
+                onCancel={this.props.setAddModalVisible}
+                maskClosable={false}
+            >
+                <ModalContent />
+            </Modal>
+        )
+    }
+}
+
+
 class TapItem extends Component {
     constructor(props) {
         super(...props)
-        console.log(props)
         this.edit = this.edit.bind(this)
         this.onTitleChange = this.onTitleChange.bind(this)
         this.state = {
@@ -22,13 +40,13 @@ class TapItem extends Component {
             id: props.id
         }
     }
-
     setAddModalVisible(AddModalVisible, current) {
         this.props.setAddModalVisible({
             ModalVisible: AddModalVisible,
             current: current
         })
     }
+
     edit() {
         if (this.state.edited) {
             this.props.editTitle({
@@ -45,6 +63,11 @@ class TapItem extends Component {
         this.setState({
             value: e.target.value
         })
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.props.todayExe !== nextProps.todayExe||
+        this.props.ModalVisible !== nextProps.ModalVisible
     }
 
     render() {
@@ -95,44 +118,37 @@ class TapItem extends Component {
                         <Icon style={{ fontSize: 25 }} type="plus" />
                     </Button>
                 </div>
-                <Modal
-                    title="请选择动作"
-                    footer={null}
-                    wrapClassName="vertical-center-modal"
-                    visible={this.props.ModalVisible}
-                    onCancel={() => this.setAddModalVisible(false, 0)}
-                    maskClosable={false}
-                >
-                    <ModalContent />
-                </Modal>
+                <WrapModal
+                    ModalVisible={this.props.ModalVisible}
+                    setAddModalVisible={() => this.setAddModalVisible(false, 0)}
+                />
             </div>
         )
     }
 }
 
 const setVisible = ({ state, id }) => {
-    for (let row in state) {
-        if (state[row].id == id) {
-            return state[row].ModalVisible
-        }
-    }
+    return state[id].ModalVisible
 }
 
 const selectTodayExe = (state) => {
     const { activeTab, Tab } = state
     for (let row in Tab) {
         if (Tab[row].id == activeTab) {
+            if (typeof Tab[row].todayExe === 'undefined') {
+                return []
+            }
             return Tab[row].todayExe
         }
     }
 }
 
-const mapState = (state) => {
+const mapState = (state, ownProps) => {
     return {
         ModalVisible: setVisible(
             {
                 state: state.PlanCreator.Tab,
-                id: state.PlanCreator.activeTab
+                id: ownProps.id
             }
         ),
         todayExe: selectTodayExe(state.PlanCreator)
