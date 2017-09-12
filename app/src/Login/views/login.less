@@ -1,0 +1,45 @@
+#components-form-demo-normal-login .login-form {
+    max-width: 300px;
+}
+
+#components-form-demo-normal-login .login-form-forgot {
+    float: right;
+}
+
+.login-form-button {
+    width: 100%;
+}
+
+@keyframes rotate {
+    0% {
+        -webkit-transform: rotateZ(0deg);
+    }
+    100% {
+        -webkit-transform: rotateZ(-360deg);
+    }
+}
+
+.iconWrap {
+    -webkit-perspective: 1000px;
+    -webkit-perspective-origin: 50% 0%;
+    perspective: 1000px;
+    perspective-origin: 50% 0%;
+    -webkit-transform: rotateX(60deg) rotateY(40deg);
+    transform: rotateX(60deg) rotateY(40deg);
+    position: absolute;
+    top: 30px;
+}
+.iconWrap.revers{
+  -webkit-perspective: 1000px;
+  -webkit-perspective-origin: 50% 0%;
+  perspective: 1000px;
+  perspective-origin: 50% 0%;
+  -webkit-transform: rotateX(60deg) rotateY(140deg);
+  transform: rotateX(60deg) rotateY(140deg);
+  position: absolute;
+}
+
+.dumbell.icon {
+    -webkit-animation: rotate 3s linear 0s infinite;
+    animation: rotate 3s linear 0s infinite;
+}

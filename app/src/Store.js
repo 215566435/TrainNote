@@ -1,8 +1,6 @@
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import thunkMiddleware from 'redux-thunk'
 import createSagaMiddleware from 'redux-saga'
-
-import { reducer as courseListReducer } from './CourseList'
 import { reducer as BodyCardsReducer } from './BodyCards'
 import { reducer as ExerciseDatabaseReducer } from './ExerciseDatabase'
 import { reducer as PlanCreatorReducer } from './PlanCreator'
@@ -12,7 +10,6 @@ import sagas from './saga'
 
 
 const reducer = combineReducers({
-  courseList: courseListReducer,
   bodyCard: BodyCardsReducer,
   ExerciseDatabase: ExerciseDatabaseReducer,
   PlanCreator: PlanCreatorReducer

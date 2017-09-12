@@ -38,7 +38,7 @@ class PlanCreator extends Component {
         return (
             <div style={{ marginTop: '8px', padding: 24, background: '#fff' }}>
                 <div style={{ marginBottom: 16 }}>
-                    <Button onClick={this.props.add}>ADD</Button>
+                    <Button onClick={this.props.add}>增加一天</Button>
                 </div>
                 <Tabs
                     activeKey={`${this.props.activeTab}`}

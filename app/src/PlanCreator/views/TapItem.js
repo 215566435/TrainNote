@@ -54,7 +54,6 @@ class TapItem extends Component {
                 value: this.state.value
             })
         }
-
         this.setState({
             edited: !this.state.edited
         })
@@ -66,8 +65,9 @@ class TapItem extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        return this.props.todayExe !== nextProps.todayExe||
-        this.props.ModalVisible !== nextProps.ModalVisible
+        return this.props.todayExe !== nextProps.todayExe ||
+            this.props.ModalVisible !== nextProps.ModalVisible||
+            this.state !== nextState
     }
 
     render() {
@@ -131,16 +131,12 @@ const setVisible = ({ state, id }) => {
     return state[id].ModalVisible
 }
 
-const selectTodayExe = (state) => {
+const selectTodayExe = (state, id) => {
     const { activeTab, Tab } = state
-    for (let row in Tab) {
-        if (Tab[row].id == activeTab) {
-            if (typeof Tab[row].todayExe === 'undefined') {
-                return []
-            }
-            return Tab[row].todayExe
-        }
+    if (typeof Tab[id].todayExe === 'undefined'){
+        return []
     }
+    return Tab[id].todayExe
 }
 
 const mapState = (state, ownProps) => {
@@ -151,7 +147,7 @@ const mapState = (state, ownProps) => {
                 id: ownProps.id
             }
         ),
-        todayExe: selectTodayExe(state.PlanCreator)
+        todayExe: selectTodayExe(state.PlanCreator, ownProps.id)
     }
 }
 
