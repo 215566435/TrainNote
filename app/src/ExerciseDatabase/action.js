@@ -22,7 +22,7 @@ const deleteData = (index) => ({
 
 const fetchDatabase = function* () {
     try {
-        let res = yield call(fetch, Url,{credentials: 'include'})
+        let res = yield call(fetch, Url, { credentials: 'include',redirect: 'follow' })
         let resJon = yield res.json()
 
         let state = yield select(state => state.ExerciseDatabase)

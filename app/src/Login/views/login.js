@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Icon, Input, Button} from 'antd';
+import { Form, Icon, Input, Button } from 'antd';
 
 import request from '../../NetWorkUtils/request'
 
@@ -12,9 +12,10 @@ import './login.less'
 
 const Url = 'http://127.0.0.1:3000/api/login'
 const FormItem = Form.Item;
-class Login extends React.Component {
+
+class LoginForm extends React.Component {
     handleSubmit = (e) => {
-        console.log(document.cookie)
+        console.log(document.cookie.split(';'))
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
@@ -22,24 +23,18 @@ class Login extends React.Component {
                 request.Post({
                     url: Url,
                     jsonData: values
-                }).then((res)=>{
-                    window.location.href = 'http://192.168.20.6:8080/Database'
-                }).catch((error)=>{
+                }).then((res) => {
+                    // window.location.href = 'http://192.168.20.6:8080/Database'
+                }).catch((error) => {
                     console.log(error)
                 })
             }
         })
     }
     render() {
-        const { getFieldDecorator } = this.props.form;
+        const { getFieldDecorator } = this.props.form
         return (
-            <div style={{ width: '100%', height: '100%', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}  >
-                <div className='iconWrap'>
-                    <img className='dumbell icon' src={ageUrl} style={{ width: 200 }} />
-                </div>
-                <div className='iconWrap revers'>
-                    <img className='dumbell icon' src={ageUrl} style={{ width: 200 }} />
-                </div>
+            <div>
                 <div style={{ width: 300 }}>
                     <Form onSubmit={this.handleSubmit} className="login-form">
                         <FormItem>
@@ -59,14 +54,34 @@ class Login extends React.Component {
                         <FormItem>
                             <Button type="primary" htmlType="submit" className="login-form-button">
                                 Log in
-                            </Button>
+                                </Button>
                         </FormItem>
                     </Form>
                 </div>
+            </div>
+        )
+    }
+}
+
+const WrappedLoginForm = Form.create()(LoginForm)
+
+class Login extends React.Component {
+
+    render() {
+        return (
+            <div style={{ width: '100%', height: '100%', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}  >
+                <div className='iconWrap'>
+                    <img className='dumbell icon' src={ageUrl} style={{ width: 200 }} />
+                </div>
+                <div className='iconWrap revers'>
+                    <img className='dumbell icon' src={ageUrl} style={{ width: 200 }} />
+                </div>
+                <WrappedLoginForm
+                />
             </div>
         );
     }
 }
 
 const WrappedNormalLoginForm = Form.create()(Login)
-export default WrappedNormalLoginForm
+export default Login
