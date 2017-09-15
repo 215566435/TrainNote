@@ -2,10 +2,12 @@ const Post = ({ url, jsonData }) => {
     console.log(jsonData)
     return fetch(url, {
         method: 'POST',
+        credentials: 'include',
         body: JSON.stringify(jsonData),
+        redirect: 'follow',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
     })
 }

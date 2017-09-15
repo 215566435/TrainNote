@@ -14,6 +14,7 @@ const Url = 'http://127.0.0.1:3000/api/login'
 const FormItem = Form.Item;
 class Login extends React.Component {
     handleSubmit = (e) => {
+        console.log(document.cookie)
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
@@ -22,8 +23,7 @@ class Login extends React.Component {
                     url: Url,
                     jsonData: values
                 }).then((res)=>{
-                    console.log(res)
-                    console.log(document.cookie)
+                    window.location.href = 'http://192.168.20.6:8080/Database'
                 }).catch((error)=>{
                     console.log(error)
                 })
