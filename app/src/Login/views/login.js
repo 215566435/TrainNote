@@ -71,11 +71,11 @@ const WrappedLoginForm = Form.create()(LoginForm)
 
 class Login extends React.Component {
     state = {
-        isLogin: false
+        isLogin: true
     }
     register() {
         this.setState({
-            isLogin:!this.state.isLogin
+            isLogin: !this.state.isLogin
         })
     }
     render() {
@@ -89,8 +89,12 @@ class Login extends React.Component {
                 </div>
                 {this.state.isLogin ?
                     <WrappedLoginForm
-                        register={this.register.bind(this)} />
-                    : <WrappedregisterForm />}
+                        register={this.register.bind(this)}
+                    />
+                    : <WrappedregisterForm
+                        return={this.register.bind(this)}
+                    />
+                }
             </div>
         )
     }

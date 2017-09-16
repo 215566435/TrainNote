@@ -24,12 +24,12 @@ class registerForm extends React.Component {
                         if (resJson.state === 'EMAIL_DUPLICATE') {
                             message.error('邮箱/用户名重复，请使用另外一个')
                             return
-                        }else if(resJson.state === 'LOGINED'){
+                        } else if (resJson.state === 'LOGINED') {
                             message.success('注册成功，自动跳转登陆')
                         }
 
                     }).catch((errs) => {
-                        
+
                         console.log(errs)
                     })
                 }).catch((error) => {
@@ -37,6 +37,14 @@ class registerForm extends React.Component {
                 })
             }
         })
+    }
+    checkPassword = (rule, value, callback) => {
+        const form = this.props.form
+        if (value && value !== form.getFieldValue('password')) {
+            callback('两次密码必须相同！')
+        } else {
+            callback()
+        }
     }
     render() {
         const { getFieldDecorator } = this.props.form
@@ -59,9 +67,19 @@ class registerForm extends React.Component {
                                 )}
                         </FormItem>
                         <FormItem>
+                            {getFieldDecorator('check-password', {
+                                rules: [{ required: true, message: '密码不能为空!' }, { validator: this.checkPassword }],
+                            })(
+                                <Input prefix={<Icon type="lock" style={{ fontSize: 13 }} />} type="password" placeholder="确认密码" />
+                                )}
+                        </FormItem>
+                        <FormItem>
                             <Button type="primary" htmlType="submit" className="login-form-button">
                                 注册
-                                </Button>
+                            </Button>
+                            <Button type="default" className="register-button" onClick={this.props.return}>
+                                返回
+                            </Button>
                         </FormItem>
                     </Form>
                 </div>

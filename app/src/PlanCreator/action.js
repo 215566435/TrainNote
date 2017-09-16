@@ -9,6 +9,18 @@ const setState = ({ state }) => ({
     state: state
 })
 
+const planTitleEdit = function*(others){
+    try {
+        console.log(others.value)
+        const state = yield select(state => state.PlanCreator)
+        yield put(setState({
+            state: { ...state, planTitle:others.value }
+        }))
+    } catch (error) {
+        message.error('出错:' + error)
+    }
+}
+
 const addTab = function* () {
     try {
         let state = yield select(state => state.PlanCreator)
@@ -316,6 +328,7 @@ const copySet = function* (others) {
 }
 
 const takeFn = {
+    planTitleEdit:planTitleEdit,
     addTab: addTab,
     activeTab: activeTab,
     delTab: delTab,
