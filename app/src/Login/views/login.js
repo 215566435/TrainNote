@@ -1,6 +1,7 @@
 import React from 'react'
 import { Form, Icon, Input, Button } from 'antd';
 
+import { WrappedregisterForm } from './register'
 import request from '../../NetWorkUtils/request'
 
 
@@ -53,8 +54,11 @@ class LoginForm extends React.Component {
                         </FormItem>
                         <FormItem>
                             <Button type="primary" htmlType="submit" className="login-form-button">
-                                Log in
-                                </Button>
+                                登陆
+                            </Button>
+                            <Button type="default" className="register-button" onClick={this.props.register}>
+                                注册
+                            </Button>
                         </FormItem>
                     </Form>
                 </div>
@@ -66,7 +70,14 @@ class LoginForm extends React.Component {
 const WrappedLoginForm = Form.create()(LoginForm)
 
 class Login extends React.Component {
-
+    state = {
+        isLogin: false
+    }
+    register() {
+        this.setState({
+            isLogin:!this.state.isLogin
+        })
+    }
     render() {
         return (
             <div style={{ width: '100%', height: '100%', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}  >
@@ -76,12 +87,13 @@ class Login extends React.Component {
                 <div className='iconWrap revers'>
                     <img className='dumbell icon' src={ageUrl} style={{ width: 200 }} />
                 </div>
-                <WrappedLoginForm
-                />
+                {this.state.isLogin ?
+                    <WrappedLoginForm
+                        register={this.register.bind(this)} />
+                    : <WrappedregisterForm />}
             </div>
-        );
+        )
     }
 }
 
-const WrappedNormalLoginForm = Form.create()(Login)
 export default Login
