@@ -15,15 +15,15 @@ export const ExerciseHOC = (props) => {
 }
 
 
-export const Exercise = ({ width, title, content, url, onDelete, loading = false, close = false }) => {
+export const Exercise = ({ width, title, content, url, onDelete, loading = false, close = false, bordered = false }) => {
     let fixedWidth = width || 240
     let fixedTitle = title || '标题'
     let fixedContent = content || ''
     return (
         <div className='Exercise-card'>
-            <Card loading={loading} bordered={false} style={{ width: fixedWidth }} bodyStyle={{ padding: 0 }}>
+            <Card loading={loading} bordered={bordered} style={{ width: fixedWidth }} bodyStyle={{ padding: 0 }}>
                 <div className="custom-image">
-                    <img alt="example"
+                    <img alt=" "
                         width="100%"
                         src={url}
                     />

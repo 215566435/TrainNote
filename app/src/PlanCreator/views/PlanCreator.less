@@ -1,46 +1,56 @@
-.tapInput.close{
+.tapInput.close {
     width: 0px;
     height: 0px;
     opacity: 0%;
-    transition:all .4s ease-in-out;
+    transition: all .4s ease-in-out;
 }
 
-.tapInput.edit{
+.tapInput.edit {
     width: 240px;
     height: 50px;
     opacity: 100%;
-    transition:all .4s ease-out;
-    
+    transition: all .4s ease-out;
 }
 
 .vertical-center-modal {
     text-align: center;
     white-space: nowrap;
-    &:before{
+    &:before {
         content: '';
         display: inline-block;
         height: 100%;
         vertical-align: middle;
         width: 0;
     }
-    .ant-modal{
+    .ant-modal {
         display: inline-block;
         vertical-align: middle;
         top: 0;
         text-align: left;
     }
-  }
-  
-  .EditExercise-btn-group.show{
+}
+
+.EditExercise-btn-group.show {
     opacity: 100%;
     transition: all .4s ease;
-  }
-  .EditExercise-btn-group.cover{
+}
+
+.EditExercise-btn-group.cover {
     transition: all .4s ease;
     opacity: 0%;
-  }
-  .Exercise.clickable{
-    &:hover{
+}
+
+.Exercise.clickable {
+    &:hover {
         cursor: pointer;
     }
-  }
+}
+
+.PlanPreview {
+    min-height: 80px;
+    background: white;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    padding: 22px;
+}

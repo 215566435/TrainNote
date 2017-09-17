@@ -4,11 +4,16 @@ import { connect } from 'react-redux'
 import { Tabs, Button, Modal, Input } from 'antd'
 
 import TapItem from './TapItem'
-
+import {PlanPreview} from './PlanPreview'
 import './PlanCreator.less'
 
 const TabPane = Tabs.TabPane
 const confirm = Modal.confirm
+
+
+
+
+
 
 
 class PlanCreator extends Component {
@@ -56,35 +61,38 @@ class PlanCreator extends Component {
     render() {
         const { tabs } = this.props
         return (
-            <div style={{ marginTop: '8px', padding: 24, background: '#fff' }}>
-                <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-                    <Button onClick={this.props.add}>增加一天</Button>
-                    <div>
-                        <div className={this.state.planTitleEdited ? 'tapInput edit' : 'tapInput close'}>
-                            <Input size="large" value={this.state.titleValue} onChange={this.titleChange} placeholder="输入计划名字" />
+            <div>
+                <PlanPreview/>
+                <div style={{ marginTop: '8px', padding: 24, background: '#fff' }}>
+                    <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+                        <Button onClick={this.props.add}>增加一天</Button>
+                        <div>
+                            <div className={this.state.planTitleEdited ? 'tapInput edit' : 'tapInput close'}>
+                                <Input size="large" value={this.state.titleValue} onChange={this.titleChange} placeholder="输入计划名字" />
+                            </div>
+                            <Button onClick={this.planTitleEdit} >{this.props.planTitle}</Button>
                         </div>
-                        <Button onClick={this.planTitleEdit} >{this.props.planTitle}</Button>
                     </div>
+                    <Tabs
+                        activeKey={`${this.props.activeTab}`}
+                        type="editable-card"
+                        hideAdd={true}
+                        onChange={this.onchange}
+                        onEdit={this.edit}
+                        tabPosition='left'
+                    >
+                        {tabs.map((item, index) => {
+                            return (
+                                <TabPane tab={tabs[index].title} key={item.id}>
+                                    <TapItem
+                                        id={index}
+                                        editTitle={this.props.editTitle}
+                                    />
+                                </TabPane>
+                            )
+                        })}
+                    </Tabs>
                 </div>
-                <Tabs
-                    activeKey={`${this.props.activeTab}`}
-                    type="editable-card"
-                    hideAdd={true}
-                    onChange={this.onchange}
-                    onEdit={this.edit}
-                    tabPosition='left'
-                >
-                    {tabs.map((item, index) => {
-                        return (
-                            <TabPane tab={tabs[index].title} key={item.id}>
-                                <TapItem
-                                    id={index}
-                                    editTitle={this.props.editTitle}
-                                />
-                            </TabPane>
-                        )
-                    })}
-                </Tabs>
             </div>
         )
     }
